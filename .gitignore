@@ -2,3 +2,4 @@
 /dist
 *.pyc
 /vms/build
+/visitor_images
