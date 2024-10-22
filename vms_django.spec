@@ -8,7 +8,7 @@ a = Analysis(
     ['manage.py'],
     pathex=[],
     binaries=[],
-    datas=[('visitor_images', 'visitor_images')],
+    datas=[],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

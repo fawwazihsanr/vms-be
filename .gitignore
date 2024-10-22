@@ -3,3 +3,4 @@
 *.pyc
 /vms/build
 /visitor_images
+db.sqlite3

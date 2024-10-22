@@ -1,5 +1,3 @@
-import pdb
-
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -16,9 +14,11 @@ class VisitorView(APIView):
 
     def post(self, request):
         visitor_data = request.data
+        user = request.user
         serializer = VisitorCreationSerializer(data=visitor_data)
         if serializer.is_valid():
             visitor_data = serializer.validated_data
+            visitor_data['created_by'] = user
             create_visitor(visitor_data)
             return created_response({"message": "Visitor created"})
         return general_error_response(serializer.errors)
@@ -35,11 +35,21 @@ class VisitorView(APIView):
         search_query = request.GET.get('q', '')
         data = get_all_visitor(search_query)
         result_page = paginator.paginate_queryset(data, request)
-        serialized_data = [model_to_dict(visitor) for visitor in result_page]
+        serialized_data = []
 
-        for visitor in serialized_data:
-            if 'image' in visitor and visitor['image']:
-                visitor['image'] = visitor['image'].url
+        for visitor_obj in result_page:
+            visitor = model_to_dict(visitor_obj)
+
+            if visitor_obj.created_by:
+                visitor['created_by'] = visitor_obj.created_by.username
+            else:
+                visitor['created_by'] = "Unknown"
+
+            if visitor_obj.image:
+                visitor['image'] = visitor_obj.image.url
+            else:
+                visitor['image'] = None
+            serialized_data.append(visitor)
 
         total_pages = paginator.page.paginator.num_pages
         return paginator.get_paginated_response({

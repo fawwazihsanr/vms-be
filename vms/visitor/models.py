@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 
@@ -35,6 +36,7 @@ class Visitor(ModelWithAutoTimestamp):
     image = models.ImageField(upload_to='visitor_images', null=True, blank=True)
     status = models.BooleanField(default=False)
     notes = models.TextField(null=True, blank=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
         db_table = 'visitor'
